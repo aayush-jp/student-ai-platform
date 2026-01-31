@@ -5,6 +5,7 @@ import { users, resources, userProgress } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { DomainSelection } from "@/components/domain-selection";
 import { ResourceCard } from "@/components/resource-card";
+import { AICoach } from "@/components/ai-coach";
 
 // Domain mapping for display names
 const domainNames: Record<string, string> = {
@@ -146,6 +147,9 @@ export default async function DashboardPage() {
           </div>
         )}
       </div>
+
+      {/* AI Coach */}
+      <AICoach />
     </div>
   );
 }
