@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { updateUserDomain } from "@/app/actions/user";
+import { useState, startTransition } from "react";
+import { updateUserDomain, resetUserDomain } from "@/app/actions/user";
 import {
   Card,
   CardContent,
@@ -39,6 +39,7 @@ interface DomainSelectionProps {
 export function DomainSelection({ currentDomain }: DomainSelectionProps) {
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isResetting, setIsResetting] = useState(false);
 
   const handleDomainSelect = async (domainId: string) => {
     try {
@@ -51,6 +52,20 @@ export function DomainSelection({ currentDomain }: DomainSelectionProps) {
       console.error(err);
     } finally {
       setLoading(null);
+    }
+  };
+
+  const handleResetDomain = async () => {
+    try {
+      setIsResetting(true);
+      startTransition(async () => {
+        await resetUserDomain();
+      });
+    } catch (err) {
+      setError("Failed to reset domain. Please try again.");
+      console.error(err);
+    } finally {
+      setIsResetting(false);
     }
   };
 
@@ -70,6 +85,17 @@ export function DomainSelection({ currentDomain }: DomainSelectionProps) {
           <p className="mt-4 text-gray-600">
             {selectedDomain?.description || "Your personalized learning journey"}
           </p>
+          <div className="mt-6">
+            <Button
+              onClick={handleResetDomain}
+              disabled={isResetting}
+              variant="outline"
+              size="sm"
+              className="border-blue-600 text-blue-600 hover:bg-blue-50"
+            >
+              {isResetting ? "Changing..." : "Change Domain"}
+            </Button>
+          </div>
         </div>
       </div>
     );

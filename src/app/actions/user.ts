@@ -82,3 +82,24 @@ export async function toggleResourceCompletion(
 
   return { success: true };
 }
+
+export async function resetUserDomain() {
+  const { userId } = await auth();
+
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  // Update user record to reset selected domain
+  await db
+    .update(users)
+    .set({
+      selectedDomain: null,
+    })
+    .where(eq(users.id, userId));
+
+  // Refresh the dashboard UI
+  revalidatePath("/dashboard");
+
+  return { success: true };
+}
